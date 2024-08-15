@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,17 +21,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.zsoltbertalan.pokedexterous.R
 import com.zsoltbertalan.pokedexterous.domain.model.Failure
 import com.zsoltbertalan.pokedexterous.domain.model.PokemonItem
+import com.zsoltbertalan.pokedexterous.presentation.component.ShowLoading
 import com.zsoltbertalan.pokedexterous.presentation.design.Dimens
 import com.zsoltbertalan.pokedexterous.presentation.design.PokedexTheme
 import com.zsoltbertalan.pokedexterous.presentation.design.PokedexTypography
 
 @Composable
 fun PokemonsScreen(
-	upcoming: LazyPagingItems<PokemonItem>,
+	pokemonItems: LazyPagingItems<PokemonItem>,
 	modifier: Modifier = Modifier,
 	onItemClick: (String, String) -> Unit,
 	onReload: () -> Unit,
@@ -51,13 +52,12 @@ fun PokemonsScreen(
 			)
 		}
 	) { innerPadding ->
-
 		LazyColumn(
 			modifier = modifier
 				.padding(innerPadding)
 				.fillMaxHeight()
 		) {
-			showPokemons(upcoming, onItemClick)
+			showPokemons(pokemonItems, onItemClick, onReload)
 		}
 	}
 }
@@ -65,6 +65,7 @@ fun PokemonsScreen(
 private fun LazyListScope.showPokemons(
 	pokemonItems: LazyPagingItems<PokemonItem>,
 	navigateToDetail: (String, String) -> Unit,
+	onReload: () -> Unit,
 ) {
 	items(pokemonItems.itemCount) { index ->
 		pokemonItems[index].let {
@@ -82,18 +83,35 @@ private fun LazyListScope.showPokemons(
 
 		}
 	}
+
+	when {
+		pokemonItems.loadState.refresh is LoadState.Loading -> item {
+			ShowLoading()
+		}
+
+		pokemonItems.loadState.append is LoadState.Loading -> item {
+			ShowLoading()
+		}
+
+		pokemonItems.loadState.refresh is LoadState.Error -> item {
+			val stateError = (pokemonItems.loadState.refresh as LoadState.Error)
+			ErrorView(
+				failure = Failure.ServerError(stateError.error.message ?: "Not loading"),
+				onReload = onReload
+			)
+		}
+	}
 }
 
 @Composable
 private fun ErrorView(
-	innerPadding: PaddingValues,
-	throwable: Failure?,
+	failure: Failure,
 	onReload: () -> Unit
 ) {
 	Column(
 		Modifier
 			.fillMaxSize(1f)
-			.padding(innerPadding),
+			.padding(Dimens.marginLarge),
 		verticalArrangement = Arrangement.Center,
 		horizontalAlignment = Alignment.CenterHorizontally,
 	) {
@@ -102,7 +120,7 @@ private fun ErrorView(
 			contentDescription = null
 		)
 		Text(
-			text = "Something went wrong",
+			text = (failure as Failure.ServerError).message,
 			modifier = Modifier
 				.fillMaxWidth()
 				.padding(Dimens.marginLarge)

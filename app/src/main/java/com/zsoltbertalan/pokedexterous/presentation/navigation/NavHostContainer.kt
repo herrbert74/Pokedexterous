@@ -30,7 +30,7 @@ fun NavHostContainer(
 		builder = {
 			composable(Destination.POKEMONS.route) {
 				PokemonsScreen(
-					upcoming = pokemonsViewModel.pokemonList.collectAsLazyPagingItems(),
+					pokemonItems = pokemonsViewModel.pokemonList.collectAsLazyPagingItems(),
 					onItemClick = { name, id->
 						if (navController.currentDestination ==
 							navController.findDestination(Destination.POKEMONS.route)
