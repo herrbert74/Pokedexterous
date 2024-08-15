@@ -1,8 +1,8 @@
 package com.zsoltbertalan.pokedexterous.data.db
 
 import com.zsoltbertalan.pokedexterous.common.util.runCatchingUnit
-import com.zsoltbertalan.pokedexterous.domain.model.Pokemon
 import com.zsoltbertalan.pokedexterous.domain.model.PokemonDetails
+import com.zsoltbertalan.pokedexterous.domain.model.PokemonItem
 import io.realm.kotlin.Realm
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
@@ -19,7 +19,7 @@ class PokemonDao @Inject constructor(private val realm: Realm) : PokemonDataSour
 		}
 	}
 
-	override suspend fun insertPokemons(pokemons: List<Pokemon>) {
+	override suspend fun insertPokemons(pokemons: List<PokemonItem>) {
 		runCatchingUnit {
 			realm.write {
 				pokemons.map { copyToRealm(it.toDbo(), UpdatePolicy.ERROR) }
@@ -35,7 +35,7 @@ class PokemonDao @Inject constructor(private val realm: Realm) : PokemonDataSour
 		}
 	}
 
-	override fun getPokemons(): Flow<List<Pokemon>?> {
+	override fun getPokemons(): Flow<List<PokemonItem>?> {
 		return realm.query(PokemonDbo::class).asFlow()
 			.map { dbo -> dbo.list.map { it.toPokemon() }.takeIf { it.isNotEmpty() } }
 	}
