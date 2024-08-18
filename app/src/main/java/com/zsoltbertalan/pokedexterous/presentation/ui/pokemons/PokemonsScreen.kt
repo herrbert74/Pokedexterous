@@ -36,7 +36,6 @@ fun PokemonsScreen(
 	pokemonItems: LazyPagingItems<PokemonItem>,
 	modifier: Modifier = Modifier,
 	onItemClick: (String, String) -> Unit,
-	onReload: () -> Unit,
 ) {
 
 	Scaffold(
@@ -57,7 +56,7 @@ fun PokemonsScreen(
 				.padding(innerPadding)
 				.fillMaxHeight()
 		) {
-			showPokemons(pokemonItems, onItemClick, onReload)
+			showPokemons(pokemonItems, onItemClick)
 		}
 	}
 }
@@ -65,7 +64,6 @@ fun PokemonsScreen(
 private fun LazyListScope.showPokemons(
 	pokemonItems: LazyPagingItems<PokemonItem>,
 	navigateToDetail: (String, String) -> Unit,
-	onReload: () -> Unit,
 ) {
 	items(pokemonItems.itemCount) { index ->
 		pokemonItems[index].let {
@@ -97,7 +95,7 @@ private fun LazyListScope.showPokemons(
 			val stateError = (pokemonItems.loadState.refresh as LoadState.Error)
 			ErrorView(
 				failure = Failure.ServerError(stateError.error.message ?: "Not loading"),
-				onReload = onReload
+				onReload = { pokemonItems.refresh() }
 			)
 		}
 	}

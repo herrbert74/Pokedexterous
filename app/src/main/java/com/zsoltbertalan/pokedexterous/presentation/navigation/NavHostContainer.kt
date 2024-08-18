@@ -37,9 +37,6 @@ fun NavHostContainer(
 						) {
 							navController.navigate("details/$name/$id")
 						}
-					},
-					onReload = {
-
 					}
 				)
 			}
