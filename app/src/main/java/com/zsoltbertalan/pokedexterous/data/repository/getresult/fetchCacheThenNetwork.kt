@@ -57,12 +57,12 @@ import retrofit2.Response
  * @return Result<[DOMAIN]> type
  */
 inline fun <REMOTE, DOMAIN> fetchCacheThenNetwork(
-    crossinline fetchFromLocal: () -> Flow<DOMAIN?>,
-    crossinline shouldMakeNetworkRequest: (DOMAIN?) -> Boolean = { true },
-    crossinline makeNetworkRequest: suspend () -> REMOTE,
-    noinline saveResponseData: suspend (REMOTE) -> Unit = { },
-    crossinline mapper: REMOTE.() -> DOMAIN,
-    strategy: STRATEGY = CACHE_FIRST_NETWORK_SECOND,
+	crossinline fetchFromLocal: () -> Flow<DOMAIN?>,
+	crossinline shouldMakeNetworkRequest: (DOMAIN?) -> Boolean = { true },
+	crossinline makeNetworkRequest: suspend () -> REMOTE,
+	noinline saveResponseData: suspend (REMOTE) -> Unit = { },
+	crossinline mapper: REMOTE.() -> DOMAIN,
+	strategy: STRATEGY = CACHE_FIRST_NETWORK_ONCE,
 ) = flow<Outcome<DOMAIN>> {
 
 	val localData = fetchFromLocal().first()

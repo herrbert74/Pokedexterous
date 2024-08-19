@@ -10,7 +10,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.zsoltbertalan.pokedexterous.presentation.ui.pokemondetails.PokemonDetailsScreen
 import com.zsoltbertalan.pokedexterous.presentation.ui.pokemondetails.PokemonDetailsViewModel
 import com.zsoltbertalan.pokedexterous.presentation.ui.pokemons.PokemonsScreen
@@ -30,7 +29,7 @@ fun NavHostContainer(
 		builder = {
 			composable(Destination.POKEMONS.route) {
 				PokemonsScreen(
-					pokemonItems = pokemonsViewModel.pokemonList.collectAsLazyPagingItems(),
+					pokemonPaginatedState = pokemonsViewModel.paginationState,
 					onItemClick = { name, id->
 						if (navController.currentDestination ==
 							navController.findDestination(Destination.POKEMONS.route)

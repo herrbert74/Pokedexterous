@@ -15,7 +15,7 @@ class DatabaseModule {
 	@Provides
 	@Singleton
 	fun provideRealmConfiguration() = RealmConfiguration.Builder(
-		schema = setOf(PokemonDbo::class, PokemonDetailsDbo::class)
+		schema = setOf(PokemonDbo::class, PokemonPageDbo::class, PokemonDetailsDbo::class)
 	).build()
 
 	@Provides

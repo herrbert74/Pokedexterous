@@ -1,7 +1,6 @@
 package com.zsoltbertalan.pokedexterous.data.network.dto
 
 import com.zsoltbertalan.pokedexterous.common.testhelper.PokemonDtoMother
-import com.zsoltbertalan.pokedexterous.domain.model.Pokemon
 import com.zsoltbertalan.pokedexterous.domain.model.PokemonItem
 import io.kotest.matchers.shouldBe
 import org.junit.Before
@@ -14,7 +13,7 @@ class PokemonDtoTest {
 	@Before
 	fun setup() {
 		val responseDto = PokemonDtoMother.createPokemonDtoList()
-		mappedResponse = responseDto.toPokemonList()
+		mappedResponse = responseDto.toPokemonReply().pagingList
 	}
 
 	@Test

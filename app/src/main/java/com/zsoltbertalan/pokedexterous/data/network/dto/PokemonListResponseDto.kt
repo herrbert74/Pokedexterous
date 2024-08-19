@@ -1,11 +1,12 @@
 package com.zsoltbertalan.pokedexterous.data.network.dto
 
+import com.zsoltbertalan.pokedexterous.domain.model.PagingReply
 import com.zsoltbertalan.pokedexterous.domain.model.PokemonItem
 
 data class PokemonListResponseDto(
 	val count: Int? = null,
 	val next: String? = null,
-	val previous: Any? = null,
+	val previous: String? = null,
 	val results: List<Result?> = listOf()
 ) {
 	data class Result(
@@ -23,6 +24,11 @@ fun PokemonListResponseDto.Result.toPokemonItem(): PokemonItem =
 			?: ""
 	)
 
-fun PokemonListResponseDto.toPokemonList() = this.results.map {
-	it?.toPokemonItem() ?: PokemonItem("", "")
+fun PokemonListResponseDto.toPokemonReply(): PagingReply<PokemonItem> {
+	return PagingReply(
+		this.results.map {
+			it?.toPokemonItem() ?: PokemonItem("", "")
+		},
+		this.next.isNullOrEmpty(),
+	)
 }

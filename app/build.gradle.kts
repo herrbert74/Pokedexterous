@@ -88,8 +88,6 @@ dependencies {
 	implementation(libs.androidx.navigation.uiKtx)
 	implementation(libs.androidx.lifecycle.runtime.compose)
 	implementation(libs.androidx.navigation.compose)
-	implementation(libs.androidx.paging.compose)
-	implementation(libs.androidx.paging.runtime)
 	implementation(libs.androidx.hilt.navigation.compose)
 	implementation(libs.google.material)
 	implementation(libs.androidx.coreKtx)
