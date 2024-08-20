@@ -15,10 +15,11 @@ import com.zsoltbertalan.pokedexterous.domain.model.PagingReply
 import com.zsoltbertalan.pokedexterous.domain.model.PokemonDetails
 import com.zsoltbertalan.pokedexterous.domain.model.PokemonItem
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PokedexterousAccessor(
+class PokedexterousAccessor @Inject constructor(
 	private val pokedexService: PokedexService,
 	private val pokemonDataSource: PokemonDataSource,
 ) : PokedexterousRepository {

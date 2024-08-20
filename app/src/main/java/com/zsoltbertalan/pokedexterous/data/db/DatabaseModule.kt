@@ -1,11 +1,13 @@
 package com.zsoltbertalan.pokedexterous.data.db
 
+import com.zsoltbertalan.pokedexterous.common.async.IoDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
+import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Singleton
 
 @Module
@@ -25,9 +27,10 @@ class DatabaseModule {
 	@Provides
 	@Singleton
 	internal fun providePokemonDataSource(
-		realm: Realm
+		realm: Realm,
+		@IoDispatcher ioContext: CoroutineDispatcher,
 	): PokemonDataSource {
-		return PokemonDao(realm)
+		return PokemonDao(realm, ioContext)
 	}
 
 }

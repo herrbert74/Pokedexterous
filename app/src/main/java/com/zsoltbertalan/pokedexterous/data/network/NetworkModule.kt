@@ -1,14 +1,12 @@
 package com.zsoltbertalan.pokedexterous.data.network
 
-import com.zsoltbertalan.pokedexterous.common.async.IoDispatcher
-import com.zsoltbertalan.pokedexterous.data.db.PokemonDataSource
 import com.zsoltbertalan.pokedexterous.data.repository.PokedexterousAccessor
 import com.zsoltbertalan.pokedexterous.domain.api.PokedexterousRepository
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -44,14 +42,14 @@ class NetworkModule {
 		return retroFit.create(PokedexService::class.java)
 	}
 
-	@Provides
-	@Singleton
-	fun providePokedexRepository(
-		pokedexService: PokedexService,
-		pokemonDataSource: PokemonDataSource,
-		@IoDispatcher ioContext: CoroutineDispatcher,
-	): PokedexterousRepository {
-		return PokedexterousAccessor(pokedexService, pokemonDataSource)
-	}
+}
+
+@Module
+@Suppress("unused")
+@InstallIn(SingletonComponent::class)
+interface BindingNetworkModule {
+
+	@Binds
+	fun bindPokedexterousRepository(pokedexterousAccessor: PokedexterousAccessor): PokedexterousRepository
 
 }

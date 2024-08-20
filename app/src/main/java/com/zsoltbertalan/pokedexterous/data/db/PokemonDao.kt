@@ -1,5 +1,6 @@
 package com.zsoltbertalan.pokedexterous.data.db
 
+import com.zsoltbertalan.pokedexterous.common.async.IoDispatcher
 import com.zsoltbertalan.pokedexterous.common.util.runCatchingUnit
 import com.zsoltbertalan.pokedexterous.domain.model.PageData
 import com.zsoltbertalan.pokedexterous.domain.model.PagingReply
@@ -8,34 +9,22 @@ import com.zsoltbertalan.pokedexterous.domain.model.PokemonItem
 import io.realm.kotlin.Realm
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.ext.query
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class PokemonDao @Inject constructor(private val realm: Realm) : PokemonDataSource {
+class PokemonDao @Inject constructor(
+	private val realm: Realm,
+	@IoDispatcher private val ioContext: CoroutineDispatcher,
+) : PokemonDataSource {
 
 	override suspend fun purgeDatabase() {
 		realm.write {
 			val pokemons = this.query(PokemonDbo::class).find()
 			delete(pokemons)
 		}
-	}
-
-	override suspend fun insertPageData(page: PageData) {
-		runCatchingUnit {
-			realm.write {
-				copyToRealm(page.toDbo(), UpdatePolicy.ALL)
-			}
-		}
-	}
-
-	override suspend fun getPageData(page: Int): PageData? {
-		return realm.query(PokemonPageDbo::class, "page = $0", page).find()
-			.map { dbo -> dbo.toPageData() }.firstOrNull()
-	}
-
-	override suspend fun getAllPageData(): List<PageData> {
-		return realm.query(PokemonPageDbo::class).find().map { dbo -> dbo.toPageData() }
 	}
 
 	override suspend fun insertPokemons(pokemons: List<PokemonItem>, page: Int) {
@@ -63,12 +52,25 @@ class PokemonDao @Inject constructor(private val realm: Realm) : PokemonDataSour
 				pagingList?.let {
 					PagingReply(pagingList, isLastPage)
 				}
-			}
+			}.flowOn(ioContext)
 	}
 
 	override fun getPokemonDetails(id: String): Flow<PokemonDetails?> {
 		return realm.query<PokemonDetailsDbo>("id = $0", id).asFlow()
-			.map { flow -> flow.list.map { it.toPokemonDetails() }.firstOrNull() }
+			.map { flow -> flow.list.map { it.toPokemonDetails() }.firstOrNull() }.flowOn(ioContext)
+	}
+
+	override suspend fun insertPageData(page: PageData) {
+		runCatchingUnit {
+			realm.write {
+				copyToRealm(page.toDbo(), UpdatePolicy.ALL)
+			}
+		}
+	}
+
+	private fun getPageData(page: Int): PageData? {
+		return realm.query(PokemonPageDbo::class, "page = $0", page).find()
+			.map { dbo -> dbo.toPageData() }.firstOrNull()
 	}
 
 }

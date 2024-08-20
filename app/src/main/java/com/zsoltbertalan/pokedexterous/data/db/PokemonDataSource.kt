@@ -12,10 +12,6 @@ interface PokemonDataSource {
 
 	suspend fun insertPageData(page: PageData)
 
-	suspend fun getPageData(page: Int): PageData?
-
-	suspend fun getAllPageData(): List<PageData>
-
 	suspend fun insertPokemons(pokemons: List<PokemonItem>, page: Int)
 
 	fun getPokemonPage(page: Int): Flow<PagingReply<PokemonItem>?>
